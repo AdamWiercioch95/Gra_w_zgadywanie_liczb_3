@@ -1,37 +1,26 @@
-from flask import Flask
+from flask import Flask, request, render_template
 
 
 app = Flask(__name__)
 
 
-def user_input():
-    possible_inputs = ["too big", "too small", "you win"]
-    while True:
-        print("[too big", "too small", "you win]")
-        user_answer = input().lower()
-        if user_answer in possible_inputs:
-            break
-        print("Please enter a valid input.")
-    return user_answer
-
-
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def guess_number():
-    print("Think of a number between 1 and 1000 and I will guess it in max. 10 tries.")
-    minimum = 0
-    maximum = 1000
-    user_answer = ''
-    while user_answer != 'you win':
-        guess = int((maximum - minimum) / 2) + minimum
-        print(f"I'm guessing: {guess}")
-        user_answer = user_input()
-        if user_answer == 'too big':
-            maximum = guess
-        elif user_answer == 'too small':
-            minimum = guess
+    if request.method == "GET":
+        return render_template("starting_page.html")
+    else:
+        min_number = int(request.form.get("min", 0))
+        max_number = int(request.form.get("max", 1000))
+        user_answer = request.form.get("user_answer")
+        guess = int(request.form.get("guess", 500))
 
-    print("I knew it!!")
+        if user_answer == "too big":
+            max_number = guess
+        elif user_answer == "too small":
+            min_number = guess
+        elif user_answer == "you won":
+            return render_template("endgame_form.html", guess=guess)
 
+        guess = (max_number - min_number) // 2 + min_number
 
-if __name__ == "__main__":
-    app.run()
+        return render_template("main_form.html", guess=guess, min=min_number, max=max_number)
