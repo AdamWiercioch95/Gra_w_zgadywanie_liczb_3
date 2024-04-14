@@ -1,3 +1,7 @@
+from flask import Flask
+
+
+app = Flask(__name__)
 
 
 def user_input():
@@ -11,6 +15,7 @@ def user_input():
     return user_answer
 
 
+@app.route("/")
 def guess_number():
     print("Think of a number between 1 and 1000 and I will guess it in max. 10 tries.")
     minimum = 0
@@ -28,4 +33,5 @@ def guess_number():
     print("I knew it!!")
 
 
-guess_number()
+if __name__ == "__main__":
+    app.run()
